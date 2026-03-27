@@ -267,7 +267,6 @@ QUESTIONS = [
         "expl": "保持した情報を逆順に操作する問題です。"
     },
     {
-    {
     "id": 8,
     "domain": "WMI",
     "domain_label": "ワーキングメモリ",
