@@ -457,11 +457,55 @@ DOMAIN_LABELS = {
     "WMI": "ワーキングメモリ",
     "PSI": "処理速度",
 }
-
+DEBUG_MODE = True
 
 # =========================
 # ユーティリティ
 # =========================
+# =========================
+# ユーティリティ
+# =========================
+def fill_debug_answers(mode="all_correct"):
+    import random
+
+    st.session_state.answers = []
+    st.session_state.raw_scores = {domain: 0 for domain in DOMAINS}
+
+    for q in QUESTIONS:
+        if mode == "all_correct":
+            user_answer = q["answer"]
+        elif mode == "all_wrong":
+            wrong_options = [opt for opt in q["options"] if opt != q["answer"]]
+            user_answer = wrong_options[0]
+        elif mode == "random":
+            user_answer = random.choice(q["options"])
+        else:
+            user_answer = q["answer"]
+
+        is_correct = user_answer == q["answer"]
+
+        st.session_state.answers.append(
+            {
+                "id": q["id"],
+                "domain": q["domain"],
+                "domain_label": q["domain_label"],
+                "question": q["q"],
+                "user_answer": user_answer,
+                "correct_answer": q["answer"],
+                "is_correct": is_correct,
+                "weight": q["weight"],
+                "expl": q["expl"],
+            }
+        )
+
+        if is_correct:
+            st.session_state.raw_scores[q["domain"]] += q["weight"]
+
+    st.session_state.started = True
+    st.session_state.current_index = len(QUESTIONS) - 1
+    st.session_state.finished = True
+
+
 def get_domain_max_scores(questions):
     max_scores = {domain: 0 for domain in DOMAINS}
     for q in questions:
@@ -473,8 +517,6 @@ def convert_domain_score(raw_score, max_score):
     """素点を指数(70〜130)に簡易変換"""
     if max_score == 0:
         return 70
-    ratio = raw_score / max_score
-    return round(70 + ratio * 60)
 
 
 def calc_fsiq(domain_indices):
@@ -579,6 +621,26 @@ if not st.session_state.started:
         st.session_state.started = True
         st.rerun()
 
+    if DEBUG_MODE:
+        st.write("---")
+        st.subheader("デバッグ用ショートカット")
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            if st.button("全問正解で結果へ"):
+                fill_debug_answers("all_correct")
+                st.rerun()
+
+        with col2:
+            if st.button("全問不正解で結果へ"):
+                fill_debug_answers("all_wrong")
+                st.rerun()
+
+        with col3:
+            if st.button("ランダム回答で結果へ"):
+                fill_debug_answers("random")
+                st.rerun()
 
 # =========================
 # 問題画面
