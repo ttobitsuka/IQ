@@ -3,10 +3,11 @@ import streamlit as st
 st.set_page_config(page_title="WAIS風知能測定アプリ", layout="centered")
 
 # =========================
-# 問題データ
+# 問題データ（32問）
+# 方式B：領域ごとにまとめて出題
 # =========================
 QUESTIONS = [
-    # ================= VCI =================
+    # ================= VCI（1〜8） =================
     {
         "id": 1,
         "domain": "VCI",
@@ -58,8 +59,93 @@ QUESTIONS = [
         "answer": "人への親切は巡って自分に返る",
         "expl": "ことわざ・慣用句の正確な理解を測ります。"
     },
+    {
+        "id": 13,
+        "domain": "VCI",
+        "domain_label": "言語理解",
+        "subtype": "類似",
+        "difficulty": 1,
+        "weight": 1,
+        "q": "「希望」と「不安」の共通点は？",
+        "options": [
+            "どちらも食べ物",
+            "どちらも未来に関する感情",
+            "どちらも病気の名前",
+            "どちらも法律用語"
+        ],
+        "answer": "どちらも未来に関する感情",
+        "expl": "抽象語どうしの共通点を見抜く問題です。"
+    },
+    {
+        "id": 14,
+        "domain": "VCI",
+        "domain_label": "言語理解",
+        "subtype": "語彙",
+        "difficulty": 2,
+        "weight": 2,
+        "q": "「本末転倒」の正しい意味は？",
+        "options": [
+            "大事なこととそうでないことを取り違えること",
+            "物事が順調に進むこと",
+            "意見が一致すること",
+            "最初からやり直すこと"
+        ],
+        "answer": "大事なこととそうでないことを取り違えること",
+        "expl": "ことわざ・四字熟語の意味理解を測ります。"
+    },
+    {
+        "id": 15,
+        "domain": "VCI",
+        "domain_label": "言語理解",
+        "subtype": "ことわざ",
+        "difficulty": 2,
+        "weight": 2,
+        "q": "「石の上にも三年」が最も伝えたいことは？",
+        "options": [
+            "石は三年で壊れる",
+            "つらくても続ければ成果が出ることがある",
+            "冷たい場所に座ってはいけない",
+            "時間は無駄にしてはいけない"
+        ],
+        "answer": "つらくても続ければ成果が出ることがある",
+        "expl": "ことわざの本来の意味を理解できるかを見る問題です。"
+    },
+    {
+        "id": 16,
+        "domain": "VCI",
+        "domain_label": "言語理解",
+        "subtype": "概念理解",
+        "difficulty": 2,
+        "weight": 2,
+        "q": "「教師」と「医師」の共通点として最も適切なのは？",
+        "options": [
+            "どちらも学校にいる",
+            "どちらも専門知識を使って人を支える職業",
+            "どちらも同じ資格でなれる",
+            "どちらも必ず白衣を着る"
+        ],
+        "answer": "どちらも専門知識を使って人を支える職業",
+        "expl": "表面的ではなく、本質的な共通点を捉える問題です。"
+    },
+    {
+        "id": 17,
+        "domain": "VCI",
+        "domain_label": "言語理解",
+        "subtype": "語彙",
+        "difficulty": 3,
+        "weight": 3,
+        "q": "「示唆」に最も近い意味は？",
+        "options": [
+            "明確な命令",
+            "それとなく気づかせること",
+            "強く反対すること",
+            "失敗を責めること"
+        ],
+        "answer": "それとなく気づかせること",
+        "expl": "語彙の精密な理解を測るやや難しめの問題です。"
+    },
 
-    # ================= PRI =================
+    # ================= PRI（9〜16） =================
     {
         "id": 4,
         "domain": "PRI",
@@ -96,8 +182,78 @@ QUESTIONS = [
         "answer": "A > C",
         "expl": "大小関係の推移性を使う問題です。"
     },
+    {
+        "id": 18,
+        "domain": "PRI",
+        "domain_label": "知覚推理",
+        "subtype": "数列",
+        "difficulty": 1,
+        "weight": 1,
+        "q": "2, 4, 6, 8, (?) 次の数字は？",
+        "options": ["9", "10", "11", "12"],
+        "answer": "10",
+        "expl": "2ずつ増える単純な等差数列です。"
+    },
+    {
+        "id": 19,
+        "domain": "PRI",
+        "domain_label": "知覚推理",
+        "subtype": "数列",
+        "difficulty": 2,
+        "weight": 2,
+        "q": "2, 5, 10, 17, 26, (?) 次の数字は？",
+        "options": ["35", "36", "37", "38"],
+        "answer": "37",
+        "expl": "差が 3, 5, 7, 9 と増えているので、次は +11 です。"
+    },
+    {
+        "id": 20,
+        "domain": "PRI",
+        "domain_label": "知覚推理",
+        "subtype": "論理",
+        "difficulty": 2,
+        "weight": 2,
+        "q": "すべての赤い箱は大きい。ある箱Aは赤い。必ず言えることは？",
+        "options": [
+            "箱Aは小さい",
+            "箱Aは大きい",
+            "箱Aは赤くない",
+            "判断できない"
+        ],
+        "answer": "箱Aは大きい",
+        "expl": "条件文から確実に導ける結論を選ぶ問題です。"
+    },
+    {
+        "id": 21,
+        "domain": "PRI",
+        "domain_label": "知覚推理",
+        "subtype": "規則発見",
+        "difficulty": 2,
+        "weight": 2,
+        "q": "3, 6, 12, 24, (?) 次の数字は？",
+        "options": ["36", "42", "48", "54"],
+        "answer": "48",
+        "expl": "前の数を2倍していく規則です。"
+    },
+    {
+        "id": 22,
+        "domain": "PRI",
+        "domain_label": "知覚推理",
+        "subtype": "論理",
+        "difficulty": 3,
+        "weight": 3,
+        "q": "AはBより重い。BはCより軽い。このとき必ず言えることは？",
+        "options": [
+            "AはCより重い",
+            "AはCより軽い",
+            "AとCの重さ関係は確定しない",
+            "Bが最も重い"
+        ],
+        "answer": "AとCの重さ関係は確定しない",
+        "expl": "A>B と C>B は分かりますが、AとCの大小関係は確定しません。"
+    },
 
-    # ================= WMI =================
+    # ================= WMI（17〜24） =================
     {
         "id": 7,
         "domain": "WMI",
@@ -134,8 +290,68 @@ QUESTIONS = [
         "answer": "9",
         "expl": "頭の中で順番に処理できるかを測ります。"
     },
+    {
+        "id": 23,
+        "domain": "WMI",
+        "domain_label": "ワーキングメモリ",
+        "subtype": "逆唱",
+        "difficulty": 1,
+        "weight": 1,
+        "q": "「4-1-7」を後ろから言うと？",
+        "options": ["7-1-4", "7-4-1", "1-7-4", "4-7-1"],
+        "answer": "7-1-4",
+        "expl": "短い数列を逆順に保持・操作する問題です。"
+    },
+    {
+        "id": 24,
+        "domain": "WMI",
+        "domain_label": "ワーキングメモリ",
+        "subtype": "並べ替え",
+        "difficulty": 2,
+        "weight": 2,
+        "q": "「ご」「ん」「り」「い」を並べ替えてできる言葉は？",
+        "options": ["りんご", "いちご", "ごりん", "りごん"],
+        "answer": "りんご",
+        "expl": "頭の中で文字を保持しながら再構成する問題です。"
+    },
+    {
+        "id": 25,
+        "domain": "WMI",
+        "domain_label": "ワーキングメモリ",
+        "subtype": "暗算",
+        "difficulty": 2,
+        "weight": 2,
+        "q": "12から4を引いて、その結果に6を足すと？",
+        "options": ["12", "13", "14", "15"],
+        "answer": "14",
+        "expl": "途中結果を保持しながら処理する問題です。"
+    },
+    {
+        "id": 26,
+        "domain": "WMI",
+        "domain_label": "ワーキングメモリ",
+        "subtype": "逆唱",
+        "difficulty": 2,
+        "weight": 2,
+        "q": "「3-9-2-6」を後ろから言うと？",
+        "options": ["6-2-9-3", "6-9-2-3", "3-2-9-6", "2-6-9-3"],
+        "answer": "6-2-9-3",
+        "expl": "保持量が少し増えた逆唱課題です。"
+    },
+    {
+        "id": 27,
+        "domain": "WMI",
+        "domain_label": "ワーキングメモリ",
+        "subtype": "暗算",
+        "difficulty": 3,
+        "weight": 3,
+        "q": "5を2倍して、3を足して、最後に4を引くと？",
+        "options": ["8", "9", "10", "11"],
+        "answer": "9",
+        "expl": "複数手順を頭の中で順番に処理する問題です。"
+    },
 
-    # ================= PSI =================
+    # ================= PSI（25〜32） =================
     {
         "id": 10,
         "domain": "PSI",
@@ -171,6 +387,66 @@ QUESTIONS = [
         "options": ["K7N2", "K7M2", "KM72", "K2M7"],
         "answer": "K7M2",
         "expl": "視覚的な照合の正確さを測る問題です。"
+    },
+    {
+        "id": 28,
+        "domain": "PSI",
+        "domain_label": "処理速度",
+        "subtype": "照合",
+        "difficulty": 1,
+        "weight": 1,
+        "q": "次のうち、他と異なるものはどれ？",
+        "options": ["XZ31", "XZ31", "XZ13", "XZ31"],
+        "answer": "XZ13",
+        "expl": "すばやく並びの違いを見つける問題です。"
+    },
+    {
+        "id": 29,
+        "domain": "PSI",
+        "domain_label": "処理速度",
+        "subtype": "比較",
+        "difficulty": 1,
+        "weight": 1,
+        "q": "次のうち、最も小さい数は？",
+        "options": ["71", "17", "27", "70"],
+        "answer": "17",
+        "expl": "単純な数の比較を正確に行う問題です。"
+    },
+    {
+        "id": 30,
+        "domain": "PSI",
+        "domain_label": "処理速度",
+        "subtype": "照合",
+        "difficulty": 2,
+        "weight": 2,
+        "q": "次のうち、完全に同じ並びはどれ？ 『R4T8』",
+        "options": ["R4T8", "R4T6", "RT48", "R8T4"],
+        "answer": "R4T8",
+        "expl": "視覚的な照合を素早く行う問題です。"
+    },
+    {
+        "id": 31,
+        "domain": "PSI",
+        "domain_label": "処理速度",
+        "subtype": "比較",
+        "difficulty": 2,
+        "weight": 2,
+        "q": "次のうち、最も大きい数は？",
+        "options": ["209", "290", "192", "220"],
+        "answer": "290",
+        "expl": "桁を見落とさずに比較できるかを測ります。"
+    },
+    {
+        "id": 32,
+        "domain": "PSI",
+        "domain_label": "処理速度",
+        "subtype": "照合",
+        "difficulty": 3,
+        "weight": 3,
+        "q": "次のうち、他と異なるものはどれ？",
+        "options": ["M2Q7", "M2Q7", "M2O7", "M2Q7"],
+        "answer": "M2O7",
+        "expl": "似た文字列の中から1文字違いを見抜くやや難しめの問題です。"
     },
 ]
 
@@ -285,7 +561,7 @@ if "finished" not in st.session_state:
 # =========================
 if not st.session_state.started:
     st.title("🧠 WAIS風知能測定アプリ")
-    st.subheader("4領域プロフィール版（簡易MVP）")
+    st.subheader("4領域プロフィール版（32問）")
 
     st.write("""
 このアプリでは、以下の4領域を簡易的に測定します。
@@ -297,7 +573,7 @@ if not st.session_state.started:
 """)
 
     st.warning("※ 本アプリは正式な臨床用知能検査ではありません。WAISを参考にした独自の簡易推定モデルです。")
-    st.info("まずはタイマーなし・固定問題版の最小構成です。")
+    st.info("現在はタイマーなし・固定問題版です。")
 
     if st.button("開始する"):
         st.session_state.started = True
@@ -312,15 +588,14 @@ elif not st.session_state.finished:
     q = QUESTIONS[q_idx]
 
     total_questions = len(QUESTIONS)
-    current_domain = q["domain"]
-    current_domain_label = q["domain_label"]
 
     st.title("📝 問題に回答してください")
     st.progress(q_idx / total_questions)
 
-    st.caption(f"領域: {current_domain} / {current_domain_label}")
+    st.caption(f"領域: {q['domain']} / {q['domain_label']}")
     st.subheader(f"問 {q_idx + 1} / {total_questions}")
     st.write(f"**問題タイプ:** {q['subtype']}")
+    st.write(f"**難易度:** {q['difficulty']}")
     st.write(f"**配点:** {q['weight']}点")
     st.write("---")
     st.write(q["q"])
@@ -340,6 +615,7 @@ elif not st.session_state.finished:
                 {
                     "id": q["id"],
                     "domain": q["domain"],
+                    "domain_label": q["domain_label"],
                     "question": q["q"],
                     "user_answer": choice,
                     "correct_answer": q["answer"],
@@ -410,7 +686,8 @@ else:
 
     for i, ans in enumerate(st.session_state.answers, start=1):
         mark = "✅" if ans["is_correct"] else "❌"
-        with st.expander(f"問{i} {mark} {ans['question'][:20]}..."):
+        with st.expander(f"問{i} {mark} {ans['question'][:24]}..."):
+            st.write(f"**領域:** {ans['domain']} / {ans['domain_label']}")
             st.write(f"**あなたの回答:** {ans['user_answer']}")
             st.write(f"**正解:** {ans['correct_answer']}")
             st.write(f"**配点:** {ans['weight']}点")
