@@ -521,13 +521,17 @@ def convert_domain_score(raw_score, max_score):
 
 def calc_fsiq(domain_indices):
     """4領域指数から総合IQを算出"""
-    return round(
-        domain_indices["VCI"] * 0.30 +
-        domain_indices["PRI"] * 0.30 +
-        domain_indices["WMI"] * 0.20 +
-        domain_indices["PSI"] * 0.20
-    )
+    vci = float(domain_indices["VCI"])
+    pri = float(domain_indices["PRI"])
+    wmi = float(domain_indices["WMI"])
+    psi = float(domain_indices["PSI"])
 
+    return round(
+        vci * 0.30 +
+        pri * 0.30 +
+        wmi * 0.20 +
+        psi * 0.20
+    )
 
 def get_iq_band_comment(iq):
     if iq >= 130:
