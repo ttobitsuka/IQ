@@ -724,7 +724,6 @@ elif not st.session_state.finished:
 # 結果画面
 # =========================
 else:
-else:
     st.balloons()
     st.title("🏁 測定完了")
     st.subheader("結果レポート")
