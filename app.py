@@ -724,23 +724,35 @@ elif not st.session_state.finished:
 # 結果画面
 # =========================
 else:
+else:
     st.balloons()
     st.title("🏁 測定完了")
     st.subheader("結果レポート")
 
+    # ① 最大スコア計算
     domain_max_scores = get_domain_max_scores(QUESTIONS)
 
+    # ② 領域指数計算（ここが重要）
     domain_indices = {}
-for domain in DOMAINS:
-    raw_score = st.session_state.raw_scores[domain]
-    mean_score = DOMAIN_NORMS[domain]["mean"]
-    sd_score = DOMAIN_NORMS[domain]["sd"]
 
-    domain_indices[domain] = convert_domain_score(
-        raw_score,
-        mean_score,
-        sd_score
-    )
+    for domain in DOMAINS:
+        raw_score = st.session_state.raw_scores[domain]
+        mean_score = DOMAIN_NORMS[domain]["mean"]
+        sd_score = DOMAIN_NORMS[domain]["sd"]
+
+        domain_indices[domain] = convert_domain_score(
+            raw_score,
+            mean_score,
+            sd_score
+        )
+
+    # ③ 全領域そろってからIQ計算
+    fsiq = calc_fsiq(domain_indices)
+    band = get_iq_band_comment(fsiq)
+
+    # ④ 表示
+    st.metric("総合推定IQ", f"{fsiq}")
+    st.write(f"判定：**{band}**")
 
     fsiq = calc_fsiq(domain_indices)
     band = get_iq_band_comment(fsiq)
