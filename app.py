@@ -1,130 +1,85 @@
 import streamlit as st
 
-st.set_page_config(page_title="ウェクスラー風・知能測定", layout="centered")
+st.set_page_config(page_title="知能測定プロ 15", layout="centered")
 
-st.title("🧠 知能測定ミニテスト (WAIS要素準拠)")
-st.write("論理、計算、言語、ワーキングメモリを測定します。全10問です。")
+# --- 問題データ定義（全15問） ---
+if 'questions' not in st.session_state:
+    st.session_state.questions = [
+        {"type": "類似", "q": "「自由」と「規律」の共通点は？", "options": ["反対の意味", "社会生活における個人のあり方", "法律の別名", "感情の種類"], "answer": "社会生活における個人のあり方", "expl": "どちらも集団の中で個人がどう振る舞うかを示す概念です。"},
+        {"type": "算数", "q": "時速60kmの車が15分で進む距離は？", "options": ["10km", "15km", "20km", "4km"], "answer": "15km", "expl": "60km/h = 1km/分。15分なら15kmです。"},
+        {"type": "行列", "q": "1, 3, 7, 15, 31, (?) 次の数字は？", "options": ["62", "63", "46", "55"], "answer": "63", "expl": "前の数を2倍して1を足す（n*2+1）法則です。"},
+        {"type": "WM", "q": "「ち」「り」「り」「と」「き」を並べ替えてできる道具は？", "options": ["ちりとりき", "きりとりち", "とりちりき", "りきりとう"], "answer": "ちりとりき", "expl": "正解は「ちりとり（機）」です。"},
+        {"type": "知識", "q": "「一石二鳥」と最も近い意味は？", "options": ["一挙両得", "因果応報", "千載一遇", "五里霧中"], "answer": "一挙両得", "expl": "一つの行為で二つの利益を得るという意味です。"},
+        {"type": "論理", "q": "A>B, B>C のとき、必ず言えることは？", "options": ["A>C", "A<C", "A=C", "判断不可"], "answer": "A>C", "expl": "三段論法により、AはCより必ず大きくなります。"},
+        {"type": "概念", "q": "「1ヶ月：1年 ＝ 1：12」が表す関係は？", "options": ["構成要素と全体", "時間の速さ", "日付の合計", "偶然"], "answer": "構成要素と全体", "expl": "12個の月が集まって1個の年を作る「内訳」の関係です。"},
+        {"type": "単語", "q": "「杞憂」の正しい意味は？", "options": ["無意味な心配", "深い悲しみ", "災難", "計画的行動"], "answer": "無意味な心配", "expl": "起こりもしないことを心配することです。"},
+        {"type": "論理", "q": "「昨日が明日なら今日は金曜日」のとき、現実は何曜日？", "options": ["水曜日", "金曜日", "日曜日", "土曜日"], "answer": "日曜日", "expl": "仮定の明日＝金曜（仮定の今日＝木曜）。現実の昨日＝木曜なので現実は日曜。"},
+        {"type": "算数", "q": "100円を20%引きし、その後10%値上げすると？", "options": ["90円", "88円", "92円", "100円"], "answer": "88円", "expl": "100 * 0.8 = 80。 80 * 1.1 = 88 です。"},
+        {"type": "類似", "q": "「山」と「川」の共通点は？", "options": ["動かないもの", "自然の地形", "飲み水", "観光地"], "answer": "自然の地形", "expl": "どちらも地球の表面を構成する自然の造形物です。"},
+        {"type": "行列", "q": "1, 1, 2, 3, 5, 8, (?) 次の数字は？", "options": ["11", "13", "15", "10"], "answer": "13", "expl": "フィボナッチ数列（前の2つを足す）です。"},
+        {"type": "WM", "q": "「8-2-5-9」を後ろから言うと？", "options": ["9-5-2-8", "9-2-5-8", "8-5-2-9", "2-5-8-9"], "answer": "9-5-2-8", "expl": "逆唱はワーキングメモリの基本課題です。"},
+        {"type": "知識", "q": "「情けは人のためならず」の正しい意味は？", "options": ["人のためにならない", "巡り巡って自分に返る", "情けは無用", "甘やかすな"], "answer": "巡り巡って自分に返る", "expl": "良い行いは自分に返ってくるという意味です。"},
+        {"type": "論理", "q": "すべての人間は死ぬ。ソクラテスは人間だ。ならば？", "options": ["ソクラテスは死ぬ", "人間はソクラテスだ", "死ぬのは人間だけ", "判断不可"], "answer": "ソクラテスは死ぬ", "expl": "アリストテレスの三段論法の典型例です。"}
+    ]
 
-# 問題データ
-questions = [
-    {
-        "type": "類似",
-        "q": "「自由」と「規律」の共通点は何ですか？",
-        "options": ["どちらも社会のルール", "どちらも概念である", "どちらも反対の意味", "どちらも大切なもの"],
-        "answer": "どちらも概念である",
-        "expl": "より高い抽象度で共通点を見つける能力を測ります。"
-    },
-    {
-        "type": "算数",
-        "q": "時速60kmの車が、15分間で進む距離は何kmですか？",
-        "options": ["10km", "15km", "20km", "4km"],
-        "answer": "15km",
-        "expl": "暗算能力と論理的な処理速度を測ります。"
-    },
-    {
-        "type": "行列推理",
-        "q": "次の数列の法則を見つけてください： 1, 3, 7, 15, 31, (?)",
-        "options": ["62", "63", "46", "55"],
-        "answer": "63",
-        "expl": "前の数を2倍して1を足す（n*2+1）というパターン推論です。"
-    },
-    {
-        "type": "ワーキングメモリ",
-        "q": "バラバラの文字「り」「し」「と」「り」「き」を並べ替えてできる『機械』は何？",
-        "options": ["しりとりき", "とりしりき", "ちりとりき", "きりとりき"],
-        "answer": "きりとりき"
-    },
-    {
-        "type": "知識",
-        "q": "「一石二鳥」と同じ意味の四字熟語はどれですか？",
-        "options": ["一挙両得", "因果応報", "千載一遇", "五里霧中"],
-        "answer": "一挙両得",
-        "expl": "習得した知識と言語の理解力を測ります。"
-    },
-    {
-        "type": "論理",
-        "q": "「AはBより大きく、BはCより小さい。AがCより大きい」という結論は？",
-        "options": ["必ず正しい", "必ず間違い", "正しいとは限らない", "Bが一番大きい"],
-        "answer": "正しいとは限らない",
-        "expl": "A>B, C>B という情報だけでは、AとCの比較は確定できません。"
-    },
-    {
-        "type": "行列推理",
-        "q": "「日：月 ＝ 1：31」であるとき、「月：年」は？",
-        "options": ["1：12", "1：365", "1：7", "1：24"],
-        "answer": "1：12",
-        "expl": "時間概念の包含関係を正しく類論する力を測ります。"
-    },
-    {
-        "type": "単語",
-        "q": "「杞憂（きゆう）」の正しい意味は？",
-        "options": ["無意味な心配", "深い悲しみ", "突然の災難", "計画的な行動"],
-        "answer": "無意味な心配",
-        "expl": "語彙の豊かさを測ります。"
-    },
-    {
-        "type": "算数",
-        "q": "ある商品の価格を20%引きし、その後10%値上げしました。元の価格と比較すると？",
-        "options": ["10%引きと同じ", "12%引きと同じ", "8%引きと同じ", "変わらない"],
-        "answer": "12%引きと同じ",
-        "expl": "100 * 0.8 * 1.1 = 88。12%引きの状態です。"
-    },
-    {
-        "type": "ワーキングメモリ",
-        "q": "「3-8-2-5」という数字を、逆から（後ろから）順番に言うと？",
-        "options": ["5-2-8-3", "5-8-2-3", "3-2-8-5", "2-5-8-3"],
-        "answer": "5-2-8-3",
-        "expl": "逆唱能力はワーキングメモリの代表的な指標です。"
-    }
-]
-
-# セッション状態の初期化
+# --- セッション状態管理 ---
 if 'step' not in st.session_state:
     st.session_state.step = 0
     st.session_state.score = 0
+    st.session_state.user_answers = []
     st.session_state.finished = False
 
-# テスト画面
+# --- メイン画面 ---
 if not st.session_state.finished:
+    st.title("🧠 知能測定ミニテスト 15")
     q_idx = st.session_state.step
-    q_data = questions[q_idx]
+    q_data = st.session_state.questions[q_idx]
     
-    st.progress((q_idx) / len(questions))
-    st.subheader(f"問 {q_idx + 1} [{q_data['type']}]")
+    st.progress(q_idx / 15)
+    st.subheader(f"問 {q_idx + 1} / 15 [{q_data['type']}]")
     st.write(q_data['q'])
     
-    # 回答選択肢
-    choice = st.radio("答えを選択してください：", q_data['options'], index=None, key=f"q_{q_idx}")
+    choice = st.radio("答えを選択：", q_data['options'], index=None, key=f"q_{q_idx}")
     
-    if st.button("次へ"):
-        if choice == q_data['answer']:
-            st.session_state.score += 1
-        
-        if q_idx + 1 < len(questions):
-            st.session_state.step += 1
-            st.rerun()
+    if st.button("次へ進む"):
+        if choice is None:
+            st.warning("回答を選んでください。")
         else:
-            st.session_state.finished = True
-            st.rerun()
+            st.session_state.user_answers.append(choice)
+            if choice == q_data['answer']:
+                st.session_state.score += 1
+            
+            if q_idx + 1 < 15:
+                st.session_state.step += 1
+                st.rerun()
+            else:
+                st.session_state.finished = True
+                st.rerun()
 
-# 結果表示
+# --- 結果・答え合わせ画面 ---
 else:
     st.balloons()
-    st.header("測定完了！")
-    score = st.session_state.score
-    total = len(questions)
+    st.header("🏁 測定完了！")
+    st.metric(label="正解数", value=f"{st.session_state.score} / 15")
     
-    st.metric(label="正解数", value=f"{score} / {total}")
+    st.divider()
+    st.subheader("📝 答え合わせと解説")
     
-    if score == 10:
-        st.success("完璧です！非常に高い知的能力（WAIS換算 130相当）の可能性があります。")
-    elif score >= 7:
-        st.info("平均より高いスコアです。論理的思考に優れています。")
-    else:
-        st.warning("平均的なスコアです。落ち着いて考えればもっと伸びるはずです。")
+    for i, q in enumerate(st.session_state.questions):
+        user_ans = st.session_state.user_answers[i]
+        is_correct = (user_ans == q['answer'])
+        
+        color = "green" if is_correct else "red"
+        mark = "✅" if is_correct else "❌"
+        
+        with st.expander(f"問 {i+1}: {mark} {q['q'][:20]}..."):
+            st.write(f"**あなたの回答:** {user_ans}")
+            st.write(f"**正解:** {q['answer']}")
+            st.info(f"**解説:** {q['expl']}")
 
-    if st.button("もう一度受ける"):
+    if st.button("トップへ戻る"):
         st.session_state.step = 0
         st.session_state.score = 0
+        st.session_state.user_answers = []
         st.session_state.finished = False
         st.rerun()
