@@ -457,6 +457,13 @@ DOMAIN_LABELS = {
     "WMI": "ワーキングメモリ",
     "PSI": "処理速度",
 }
+
+DOMAIN_NORMS = {
+    "VCI": {"mean": 8.0, "sd": 2.5},
+    "PRI": {"mean": 8.0, "sd": 2.5},
+    "WMI": {"mean": 8.0, "sd": 2.5},
+    "PSI": {"mean": 8.0, "sd": 2.5},
+}
 DEBUG_MODE = True
 
 # =========================
@@ -513,33 +520,36 @@ def get_domain_max_scores(questions):
     return max_scores
 
 
-def convert_domain_score(raw_score, max_score):
-    """素点を指数(70〜130)に簡易変換"""
+def convert_domain_score(raw_score, mean_score, sd_score):
+    """素点を平均100・標準偏差15の指数に変換"""
     raw_score = float(raw_score)
-    max_score = float(max_score)
+    mean_score = float(mean_score)
+    sd_score = float(sd_score)
 
-    if max_score == 0:
-        return 70
+    if sd_score == 0:
+        return 100
 
-    percentage = raw_score / max_score
-    index_score = round(percentage * 60 + 70)
+    z = (raw_score - mean_score) / sd_score
+    index_score = round(100 + 15 * z)
 
-    return int(index_score)
+    return max(55, min(145, int(index_score)))
 
 
 def calc_fsiq(domain_indices):
-    """4領域指数から総合IQを算出"""
-    vci = float(domain_indices["VCI"])
-    pri = float(domain_indices["PRI"])
-    wmi = float(domain_indices["WMI"])
-    psi = float(domain_indices["PSI"])
-
-    return round(
-        vci * 0.30 +
-        pri * 0.30 +
-        wmi * 0.20 +
-        psi * 0.20
+    composite = (
+        float(domain_indices["VCI"]) +
+        float(domain_indices["PRI"]) +
+        float(domain_indices["WMI"]) +
+        float(domain_indices["PSI"])
     )
+
+    mean_sum = 400.0
+    sd_sum = 30.0
+
+    z = (composite - mean_sum) / sd_sum
+    fsiq = round(100 + 15 * z)
+
+    return max(55, min(145, int(fsiq)))
 
 def get_iq_band_comment(iq):
     if iq >= 130:
@@ -721,11 +731,16 @@ else:
     domain_max_scores = get_domain_max_scores(QUESTIONS)
 
     domain_indices = {}
-    for domain in DOMAINS:
-        domain_indices[domain] = convert_domain_score(
-            st.session_state.raw_scores[domain],
-            domain_max_scores[domain]
-        )
+for domain in DOMAINS:
+    raw_score = st.session_state.raw_scores[domain]
+    mean_score = DOMAIN_NORMS[domain]["mean"]
+    sd_score = DOMAIN_NORMS[domain]["sd"]
+
+    domain_indices[domain] = convert_domain_score(
+        raw_score,
+        mean_score,
+        sd_score
+    )
 
     fsiq = calc_fsiq(domain_indices)
     band = get_iq_band_comment(fsiq)
