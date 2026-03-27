@@ -515,8 +515,16 @@ def get_domain_max_scores(questions):
 
 def convert_domain_score(raw_score, max_score):
     """素点を指数(70〜130)に簡易変換"""
+    raw_score = float(raw_score)
+    max_score = float(max_score)
+
     if max_score == 0:
         return 70
+
+    percentage = raw_score / max_score
+    index_score = round(percentage * 60 + 70)
+
+    return int(index_score)
 
 
 def calc_fsiq(domain_indices):
